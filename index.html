@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>SICO - Sistema Interno de Comunicación Organizacional</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body {
+      margin: 0;
+      background: #f5f6fa;
+      color: #222;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+    .app {
+      max-width: 1080px;
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      padding: 24px 32px 32px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e2e4ea;
+      padding-bottom: 12px;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 28px;
+      color: #1664d8;
+      letter-spacing: 1px;
+    }
+    h1 { font-size: 22px; margin: 0; }
+    .subtitle { font-size: 14px; color: #666; margin-top: 4px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .card {
+      background: #fafbff;
+      border-radius: 14px;
+      padding: 18px 18px 20px;
+      border: 1px solid #e2e4f0;
+    }
+    .card h2 { font-size: 16px; margin: 0 0 12px; }
+    label { font-size: 14px; display: block; margin-bottom: 8px; cursor: pointer; }
+    .radio-group { margin-top: 6px; }
+    .radio-inline {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .radio-inline input { margin-top: 3px; }
+    .badge { display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 6px; }
+    .badge.rojo { background: #ff5252; }
+    .badge.ambar { background: #ffb020; }
+    .badge.azul { background: #2979ff; }
+    .desc { font-size: 12px; color: #666; margin-top: -4px; margin-left: 22px; }
+    .field { margin-top: 16px; }
+    .field label { font-weight: 500; margin-bottom: 4px; }
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #d0d3e2;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 36px;
+    }
+    textarea { min-height: 110px; }
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-sec { background: #eef1f8; color: #333; }
+    .btn-primary { background: #1664d8; color: #fff; }
+    .btn-primary:disabled { background: #9bb8ee; cursor: not-allowed; }
+
+    .ticket {
+      margin-top: 24px;
+      background: #e8f4ff;
+      border-radius: 14px;
+      padding: 16px 18px;
+      border: 1px solid #c7ddff;
+      display: none;
+    }
+    .ticket h2 { font-size: 16px; margin: 0 0 8px; }
+    .ticket p { margin: 0; font-size: 13px; }
+    .ticket-code {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      background: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px dashed #88a8e5;
+      display: inline-block;
+      margin: 4px 0 10px;
+    }
+    .small-muted { font-size: 11px; color: #666; margin-top: 4px; }
+
+    /* Vistas */
+    #loginView, #formView, #adminView { display: none; }
+    #loginView.active, #formView.active, #adminView.active { display: block; }
+
+    .login-box {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 24px 20px 10px;
+    }
+    .login-title { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+    .login-sub { font-size: 13px; color: #666; margin-bottom: 18px; }
+    .login-actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .error-msg {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #c62828;
+      display: none;
+    }
+
+    /* Tabla RRHH */
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #e1e4ec;
+      text-align: left;
+    }
+    th {
+      background: #f5f7ff;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+    tr:nth-child(even) td { background: #fafbff; }
+
+    .estado-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+    .estado-REGISTRADO { background: #fff3cd; color: #8a6d3b; }
+    .estado-EN_REVISION { background: #d1ecf1; color: #0c5460; }
+    .estado-ATENDIDO { background: #d4edda; color: #155724; }
+    .estado-DERIVADO { background: #e2e3ff; color: #383d7c; }
+
+    select.estadoSelect {
+      font-size: 12px;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid #c8cee0;
+      background: #fff;
+    }
+
+    .btn-mini {
+      margin-left: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      border-radius: 999px;
+      border: 1px solid #c8cee0;
+      background: #f5f7ff;
+      cursor: pointer;
+    }
+    .btn-mini:hover {
+      background: #e1e6ff;
+    }
+
+    /* Badge de conformidad */
+    .conf-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .conf-Pendiente {
+      background: #f1f3f9;
+      color: #5b647b;
+    }
+    .conf-Conforme {
+      background: #e3f9e5;
+      color: #256b38;
+    }
+    .conf-No\ conforme {
+      background: #fff4e5;
+      color: #8a4b16;
+    }
+
+    @media (max-width: 640px) {
+      .app { padding: 18px 16px 24px; }
+      header { flex-direction: column; align-items: flex-start; gap: 6px; }
+      table { font-size: 11px; }
+      th, td { padding: 6px 4px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo" id="logoHome" style="cursor:pointer;">SICO</div>
+    <div>
+      <h1>Sistema Interno de Comunicación Organizacional</h1>
+      <div class="subtitle">Banco de la Nación – Prototipo de registro y atención de comunicaciones.</div>
+    </div>
+  </header>
+
+  <!-- 🔐 VISTA LOGIN -->
+  <section id="loginView" class="active">
+    <div class="login-box">
+      <div class="login-title">Ingreso de usuario</div>
+      <div class="login-sub">Use sus credenciales institucionales para ingresar.</div>
+
+      <div class="field">
+        <label for="loginUser">Usuario</label>
+        <input type="text" id="loginUser" placeholder="Ej.: trabajador01 o rrhh01" />
+      </div>
+
+      <div class="field">
+        <label for="loginPass">Contraseña</label>
+        <input type="password" id="loginPass" placeholder="********" />
+      </div>
+
+      <div class="error-msg" id="loginError">
+        Usuario o contraseña incorrectos. Intente nuevamente.
+      </div>
+
+      <div class="login-actions">
+        <button class="btn-sec" id="loginClear">Limpiar</button>
+        <button class="btn-primary" id="loginBtn">Ingresar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 📝 VISTA FORM (Etapa 1 + Etapa 3) -->
+  <section id="formView">
+    <h2 style="font-size:18px; margin: 0 0 12px;">Registro de sugerencias, reclamos y propuestas</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Complete la siguiente información. Su comunicación será derivada a Recursos Humanos.
+    </div>
+
+    <form id="sicoForm">
+      <div class="grid">
+        <!-- Columna 1 -->
+        <div class="card">
+          <h2>¿Cómo desea registrar su comunicación?</h2>
+          <div class="radio-group">
+            <div class="radio-inline">
+              <input type="radio" id="anonimo" name="visibilidad" value="ANONIMO" required />
+              <label for="anonimo">Anónima<br>
+                <span class="desc">Su nombre no será mostrado al momento de la atención.</span>
+              </label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" id="publico" name="visibilidad" value="PUBLICO" />
+              <label for="publico">Pública (mostrar mi nombre)<br>
+                <span class="desc">Su nombre será visible para el área que atienda el caso.</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna 2 -->
+        <div class="card">
+          <h2>Seleccione el nivel de urgencia</h2>
+          <div class="radio-group">
+            <div class="radio-inline">
+              <input type="radio" id="urgente" name="urgencia" value="ALTA" required />
+              <label for="urgente">
+                <span class="badge rojo"></span>Urgente
+                <div class="desc">(requiere atención inmediata)</div>
+              </label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" id="media" name="urgencia" value="MEDIA" />
+              <label for="media">
+                <span class="badge ambar"></span>Media
+                <div class="desc">(requiere atención en 48 horas)</div>
+              </label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" id="baja" name="urgencia" value="BAJA" />
+              <label for="baja">
+                <span class="badge azul"></span>Baja
+                <div class="desc">(puede ser atendido dentro del mes)</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna 3 -->
+        <div class="card">
+          <h2>¿Qué desea registrar?</h2>
+          <div class="radio-group">
+            <div class="radio-inline">
+              <input type="radio" id="sugerencia" name="tipo" value="SUGERENCIA" required />
+              <label for="sugerencia">Sugerencia
+                <div class="desc">Idea para mejorar un proceso, ambiente o práctica.</div>
+              </label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" id="reclamo" name="tipo" value="RECLAMO" />
+              <label for="reclamo">Reclamo
+                <div class="desc">Problema específico que afecta su trabajo o bienestar.</div>
+              </label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" id="propuesta" name="tipo" value="PROPUESTA" />
+              <label for="propuesta">Propuesta
+                <div class="desc">Alternativa o planteamiento para resolver una situación.</div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Redacción -->
+      <div class="field">
+        <label for="titulo">Título de la comunicación</label>
+        <input type="text" id="titulo" name="titulo" maxlength="120" required
+               placeholder="Ej.: Propuesta para mejorar la rotación de turnos" />
+      </div>
+
+      <div class="field">
+        <label for="detalle">Detalle / descripción</label>
+        <textarea id="detalle" name="detalle" required
+                  placeholder="Describa brevemente la situación, sugerencia o propuesta..."></textarea>
+        <div class="small-muted">Evite incluir datos sensibles innecesarios. Sea concreto y respetuoso.</div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-sec" id="limpiarBtn">Limpiar</button>
+        <button type="submit" class="btn-primary" id="enviarBtn">Enviar comunicación</button>
+      </div>
+    </form>
+
+    <!-- Ticket -->
+    <div class="ticket" id="ticketBox">
+      <h2>✅ Comunicación registrada correctamente</h2>
+      <p>Su número de seguimiento es:</p>
+      <div class="ticket-code" id="ticketCode"></div>
+      <p>Podrá utilizar este código si necesita hacer seguimiento con Recursos Humanos.</p>
+      <p class="small-muted" id="ticketMeta"></p>
+    </div>
+
+    <!-- LISTA DE COMUNICACIONES DEL TRABAJADOR (ETAPA 3) -->
+    <div id="misComunicaciones" class="card" style="margin-top:24px;">
+      <h2 style="font-size:16px; margin:0 0 6px;">Mis comunicaciones</h2>
+      <div class="subtitle" style="margin-bottom:8px;">
+        Revise el estado de sus comunicaciones y registre su conformidad cuando corresponda.
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Urgencia</th>
+            <th>Estado</th>
+            <th>Conformidad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaMisTickets">
+          <!-- filas dinámicas -->
+        </tbody>
+      </table>
+
+      <div class="small-muted" style="margin-top:8px;">
+        Solo se muestran las comunicaciones registradas con su usuario actual.
+      </div>
+    </div>
+
+    <!-- PANEL DE CONFORMIDAD -->
+    <div id="panelConformidad" class="card" style="margin-top:16px; display:none;">
+      <h3 style="margin:0 0 8px; font-size:15px;">Conformidad de atención</h3>
+      <div class="small-muted" id="panelConformidadInfo"></div>
+
+      <div class="field" style="margin-top:12px;">
+        <label style="display:block; margin-bottom:4px;">
+          <input type="radio" name="conformidad" value="CONFORME">
+          Estoy conforme con la atención recibida
+        </label>
+        <label style="display:block;">
+          <input type="radio" name="conformidad" value="NO_CONFORME">
+          No estoy conforme, deseo dejar un comentario
+        </label>
+      </div>
+
+      <div class="field" id="campoComentarioConformidad" style="display:none;">
+        <label for="comentarioConformidad">Comentario</label>
+        <textarea id="comentarioConformidad"
+                  placeholder="Describa brevemente por qué no está conforme o qué espera que se revise..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-sec" id="cancelarConformidad">Cancelar</button>
+        <button type="button" class="btn-primary" id="guardarConformidad">Guardar conformidad</button>
+      </div>
+
+      <div class="small-muted" id="panelConformidadMsg" style="margin-top:8px;"></div>
+    </div>
+  </section>
+
+  <!-- 🧮 VISTA RRHH (Etapa 2 + mejoras) -->
+  <section id="adminView">
+    <div class="admin-header">
+      <div>
+        <h2 style="font-size:18px; margin:0 0 4px;">Panel de RRHH – Evaluación y atención</h2>
+      </div>
+      <button class="btn-sec" id="refrescarBtn">Actualizar lista</button>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div class="subtitle">
+        Revise las comunicaciones registradas, actualice su estado y defina el tipo de atención.
+      </div>
+      <div>
+        <label for="filtroConformidadAdmin" class="subtitle" style="margin-right:4px;">
+          Filtrar por conformidad:
+        </label>
+        <select id="filtroConformidadAdmin">
+          <option value="TODOS">Todos</option>
+          <option value="PENDIENTE">Pendiente</option>
+          <option value="CONFORME">Conforme</option>
+          <option value="NO_CONFORME">No conforme</option>
+        </select>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Fecha</th>
+          <th>Usuario</th>
+          <th>Tipo</th>
+          <th>Urgencia</th>
+          <th>Visibilidad</th>
+          <th>Estado</th>
+          <th>Conformidad</th>
+          <th>Cambiar estado</th>
+        </tr>
+      </thead>
+      <tbody id="tablaTickets">
+        <!-- filas dinámicas -->
+      </tbody>
+    </table>
+
+    <div id="panelAtencion" class="card" style="margin-top:16px; display:none;">
+      <h3 style="margin:0 0 8px; font-size:15px;">Atender comunicación</h3>
+      <div class="small-muted" id="panelAtencionInfo"></div>
+
+      <div class="field" style="margin-top:12px;">
+        <label style="display:block; margin-bottom:4px;">
+          <input type="radio" name="modoAtencion" value="RESPONDER">
+          Responder
+        </label>
+        <label style="display:block;">
+          <input type="radio" name="modoAtencion" value="DERIVAR">
+          Derivar a otra área
+        </label>
+      </div>
+
+      <div class="field" id="panelRespuesta" style="display:none;">
+        <label for="textoRespuesta">Respuesta para el trabajador</label>
+        <textarea id="textoRespuesta" placeholder="Redacte la respuesta que se enviará al trabajador..."></textarea>
+      </div>
+
+      <div class="field" id="panelDerivar" style="display:none;">
+        <label for="areaDerivar">Seleccione el área de destino</label>
+        <select id="areaDerivar">
+          <option value="">Seleccione un área...</option>
+          <option value="Administración de personal">Administración de personal</option>
+          <option value="Tecnología e información">Tecnología e información</option>
+          <option value="Comercial">Comercial</option>
+          <option value="Atención al cliente">Atención al cliente</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-sec" id="cancelarAtencion">Cancelar</button>
+        <button type="button" class="btn-primary" id="guardarAtencion">Guardar y enviar</button>
+      </div>
+
+      <div class="small-muted" id="panelAtencionMsg" style="margin-top:8px;"></div>
+    </div>
+
+    <!-- Detalle de conformidad (RRHH) -->
+    <div id="panelDetalleConformidad" class="card" style="margin-top:16px; display:none;">
+      <h3 style="margin:0 0 8px; font-size:15px;">Detalle de conformidad del trabajador</h3>
+      <div class="small-muted" id="detalleConformidadInfo"></div>
+      <p id="detalleConformidadTexto" style="margin-top:8px; white-space:pre-line;"></p>
+
+      <div class="actions">
+        <button type="button" class="btn-sec" id="cerrarDetalleConformidad">Cerrar</button>
+      </div>
+    </div>
+
+    <div class="small-muted" style="margin-top:8px;">
+      *Este panel es un prototipo. Los datos se almacenan localmente en el navegador (localStorage).
+    </div>
+  </section>
+</div>
+
+<script>
+  // =========================
+  // REFERENCIAS A LAS VISTAS
+  // =========================
+  const loginView = document.getElementById('loginView');
+  const formView  = document.getElementById('formView');
+  const adminView = document.getElementById('adminView');
+  const logoHome  = document.getElementById('logoHome');
+
+  function mostrarVistaLogin() {
+    loginView.classList.add('active');
+    formView.classList.remove('active');
+    adminView.classList.remove('active');
+  }
+
+  function mostrarVistaTrabajador() {
+    loginView.classList.remove('active');
+    adminView.classList.remove('active');
+    formView.classList.add('active');
+    panelConformidad.style.display = 'none';
+    cargarMisTickets();
+  }
+
+  function mostrarVistaRRHH() {
+    loginView.classList.remove('active');
+    formView.classList.remove('active');
+    adminView.classList.add('active');
+    cargarTicketsEnTabla();
+  }
+
+  // =========================
+  // LOGIN
+  // =========================
+  const loginUser  = document.getElementById('loginUser');
+  const loginPass  = document.getElementById('loginPass');
+  const loginBtn   = document.getElementById('loginBtn');
+  const loginClear = document.getElementById('loginClear');
+  const loginError = document.getElementById('loginError');
+
+  const usuariosDemo = [
+    { usuario: 'trabajador01', pass: '1234', rol: 'TRABAJADOR' },
+    { usuario: 'trabajador02', pass: '1234', rol: 'TRABAJADOR' },
+    { usuario: 'rrhh01',       pass: '1234', rol: 'RRHH' },
+  ];
+
+  function buscarUsuario(u, p) {
+    return usuariosDemo.find(item => item.usuario === u && item.pass === p) || null;
+  }
+
+  loginBtn.addEventListener('click', () => {
+    const u = loginUser.value.trim();
+    const p = loginPass.value.trim();
+
+    if (!u || !p) {
+      loginError.textContent = 'Ingrese usuario y contraseña.';
+      loginError.style.display = 'block';
+      return;
+    }
+
+    const usuario = buscarUsuario(u, p);
+    if (usuario) {
+      loginError.style.display = 'none';
+      localStorage.setItem('sicoUsuario', usuario.usuario);
+      localStorage.setItem('sicoRol', usuario.rol);
+
+      if (usuario.rol === 'TRABAJADOR') {
+        mostrarVistaTrabajador();
+      } else if (usuario.rol === 'RRHH') {
+        mostrarVistaRRHH();
+      }
+    } else {
+      loginError.textContent = 'Usuario o contraseña incorrectos. Intente nuevamente.';
+      loginError.style.display = 'block';
+    }
+  });
+
+  loginClear.addEventListener('click', () => {
+    loginUser.value = '';
+    loginPass.value = '';
+    loginError.style.display = 'none';
+    loginUser.focus();
+  });
+
+  // Siempre iniciar en login
+  mostrarVistaLogin();
+
+  // Cerrar sesión al hacer clic en SICO
+  logoHome.addEventListener('click', () => {
+    localStorage.removeItem('sicoUsuario');
+    localStorage.removeItem('sicoRol');
+    mostrarVistaLogin();
+  });
+
+  // =========================
+  // REGISTRO SICO (ETAPA 1)
+  // =========================
+  const form          = document.getElementById('sicoForm');
+  const ticketBox     = document.getElementById('ticketBox');
+  const ticketCodeEl  = document.getElementById('ticketCode');
+  const ticketMetaEl  = document.getElementById('ticketMeta');
+  const limpiarBtn    = document.getElementById('limpiarBtn');
+
+  function generarCodigo() {
+    const ahora = new Date();
+    const año = ahora.getFullYear();
+    const rand = Math.floor(Math.random() * 9000) + 1000;
+    return `SICO-${año}-${rand}`;
+  }
+
+  function obtenerTickets() {
+    return JSON.parse(localStorage.getItem('sicoTickets') || '[]');
+  }
+
+  function guardarTickets(lista) {
+    localStorage.setItem('sicoTickets', JSON.stringify(lista));
+  }
+
+  function guardarEnLocalStorage(ticket) {
+    const existentes = obtenerTickets();
+    existentes.push(ticket);
+    guardarTickets(existentes);
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const data = new FormData(form);
+    const visibilidad = data.get('visibilidad');
+    const urgencia    = data.get('urgencia');
+    const tipo        = data.get('tipo');
+    const titulo      = data.get('titulo').trim();
+    const detalle     = data.get('detalle').trim();
+    const usuarioSesion = localStorage.getItem('sicoUsuario') || 'ANON';
+
+    if (!visibilidad || !urgencia || !tipo || !titulo || !detalle) {
+      alert('Por favor complete todos los campos.');
+      return;
+    }
+
+    const codigo = generarCodigo();
+    const fecha  = new Date().toLocaleString('es-PE');
+
+    const ticket = {
+      codigo,
+      fecha,
+      visibilidad,
+      urgencia,
+      tipo,
+      titulo,
+      detalle,
+      usuario: usuarioSesion,
+      estado: 'REGISTRADO',
+      conformidad: null,
+      comentarioConformidad: '',
+      respuesta: '',
+      areaDerivada: ''
+    };
+
+    guardarEnLocalStorage(ticket);
+
+    ticketCodeEl.textContent = codigo;
+    ticketMetaEl.textContent =
+      `Registrado el ${fecha} – Tipo: ${tipo}, Urgencia: ${urgencia}, Usuario: ${usuarioSesion}`;
+    ticketBox.style.display = 'block';
+
+    form.reset();
+    cargarMisTickets();
+  });
+
+  limpiarBtn.addEventListener('click', () => {
+    if (confirm('¿Desea limpiar el formulario?')) {
+      form.reset();
+    }
+  });
+
+  // =========================
+  // ETAPA 3: Mis comunicaciones (TRABAJADOR)
+  // =========================
+  const tablaMisTickets            = document.getElementById('tablaMisTickets');
+  const panelConformidad           = document.getElementById('panelConformidad');
+  const panelConformidadInfo       = document.getElementById('panelConformidadInfo');
+  const panelConformidadMsg        = document.getElementById('panelConformidadMsg');
+  const campoComentarioConformidad = document.getElementById('campoComentarioConformidad');
+  const comentarioConformidad      = document.getElementById('comentarioConformidad');
+  const guardarConformidad         = document.getElementById('guardarConformidad');
+  const cancelarConformidad        = document.getElementById('cancelarConformidad');
+
+  let indiceConformidad = null;
+
+  function textoConformidad(t) {
+    if (!t.conformidad) return 'Pendiente';
+    if (t.conformidad === 'CONFORME') return 'Conforme';
+    if (t.conformidad === 'NO_CONFORME') return 'No conforme';
+    return t.conformidad;
+  }
+
+  function cargarMisTickets() {
+    const usuarioSesion = localStorage.getItem('sicoUsuario');
+    if (!usuarioSesion || !tablaMisTickets) return;
+
+    const tickets = obtenerTickets();
+    tablaMisTickets.innerHTML = '';
+
+    let tieneAlguno = false;
+
+    tickets.forEach((t, index) => {
+      if (t.usuario !== usuarioSesion) return;
+      tieneAlguno = true;
+
+      const puedeRevisar = (t.estado === 'ATENDIDO' || t.estado === 'DERIVADO');
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${t.codigo}</td>
+        <td>${t.fecha}</td>
+        <td>${t.tipo}</td>
+        <td>${t.urgencia}</td>
+        <td>${t.estado}</td>
+        <td>${textoConformidad(t)}</td>
+        <td>
+          ${
+            puedeRevisar
+              ? `<button type="button" class="btn-mini conformidadBtn" data-index="${index}">
+                   Revisar
+                 </button>`
+              : '<span class="small-muted">En proceso</span>'
+          }
+        </td>
+      `;
+      tablaMisTickets.appendChild(tr);
+    });
+
+    if (!tieneAlguno) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="7">Aún no ha registrado comunicaciones.</td>`;
+      tablaMisTickets.appendChild(tr);
+    }
+  }
+
+  guardarConformidad.addEventListener('click', () => {
+    if (indiceConformidad === null) return;
+
+    const seleccion = document.querySelector('input[name="conformidad"]:checked');
+    if (!seleccion) {
+      alert('Seleccione si está conforme o no con la atención.');
+      return;
+    }
+
+    const tickets = obtenerTickets();
+    const t = tickets[indiceConformidad];
+
+    t.conformidad = seleccion.value;
+
+    if (seleccion.value === 'NO_CONFORME') {
+      const comentario = comentarioConformidad.value.trim();
+      if (!comentario) {
+        alert('Por favor ingrese un comentario para indicar por qué no está conforme.');
+        return;
+      }
+      t.comentarioConformidad = comentario;
+    } else {
+      t.comentarioConformidad = '';
+    }
+
+    guardarTickets(tickets);
+    panelConformidadMsg.textContent = 'Su conformidad ha sido registrada. ¡Gracias por su respuesta!';
+    cargarMisTickets();
+  });
+
+  cancelarConformidad.addEventListener('click', () => {
+    panelConformidad.style.display = 'none';
+    indiceConformidad = null;
+  });
+
+  // =========================
+  // PANEL RRHH (ETAPA 2)
+  // =========================
+  const tablaTickets = document.getElementById('tablaTickets');
+  const refrescarBtn = document.getElementById('refrescarBtn');
+
+  const filtroConformidadAdmin      = document.getElementById('filtroConformidadAdmin');
+  const panelAtencion               = document.getElementById('panelAtencion');
+  const panelAtencionInfo           = document.getElementById('panelAtencionInfo');
+  const panelAtencionMsg            = document.getElementById('panelAtencionMsg');
+  const panelRespuesta              = document.getElementById('panelRespuesta');
+  const panelDerivar                = document.getElementById('panelDerivar');
+  const textoRespuesta              = document.getElementById('textoRespuesta');
+  const areaDerivar                 = document.getElementById('areaDerivar');
+  const guardarAtencion             = document.getElementById('guardarAtencion');
+  const cancelarAtencion            = document.getElementById('cancelarAtencion');
+
+  const panelDetalleConformidad     = document.getElementById('panelDetalleConformidad');
+  const detalleConformidadInfo      = document.getElementById('detalleConformidadInfo');
+  const detalleConformidadTexto     = document.getElementById('detalleConformidadTexto');
+  const cerrarDetalleConformidadBtn = document.getElementById('cerrarDetalleConformidad');
+
+  let indiceEnAtencion = null;
+
+  function badgeEstado(estado) {
+    return `<span class="estado-badge estado-${estado}">${estado.replace('_', ' ')}</span>`;
+  }
+
+  function badgeConformidad(t) {
+    const txt = textoConformidad(t);
+    if (txt === 'Conforme') {
+      return `<span class="conf-badge conf-Conforme">${txt}</span>`;
+    }
+    if (txt === 'No conforme') {
+      return `<span class="conf-badge conf-No conforme">${txt}</span>`;
+    }
+    return `<span class="conf-badge conf-Pendiente">${txt}</span>`;
+  }
+
+  function cargarTicketsEnTabla() {
+    const tickets = obtenerTickets();
+    tablaTickets.innerHTML = '';
+    panelAtencion.style.display = 'none';
+    panelDetalleConformidad.style.display = 'none';
+    indiceEnAtencion = null;
+
+    const filtro = filtroConformidadAdmin ? filtroConformidadAdmin.value : 'TODOS';
+
+    if (tickets.length === 0) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="9">No hay comunicaciones registradas.</td>`;
+      tablaTickets.appendChild(tr);
+      return;
+    }
+
+    let hayFiltrados = false;
+
+    tickets.forEach((t, index) => {
+      const confTxt = textoConformidad(t);
+
+      if (filtro === 'PENDIENTE'   && confTxt !== 'Pendiente')   return;
+      if (filtro === 'CONFORME'    && confTxt !== 'Conforme')    return;
+      if (filtro === 'NO_CONFORME' && confTxt !== 'No conforme') return;
+
+      hayFiltrados = true;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          ${t.codigo}
+          <button type="button" class="btn-mini atenderBtn" data-index="${index}">Atender</button>
+        </td>
+        <td>${t.fecha}</td>
+        <td>${t.visibilidad === 'ANONIMO' ? 'Anónimo' : (t.usuario || '')}</td>
+        <td>${t.tipo}</td>
+        <td>${t.urgencia}</td>
+        <td>${t.visibilidad}</td>
+        <td>${badgeEstado(t.estado || 'REGISTRADO')}</td>
+        <td>
+          ${badgeConformidad(t)}
+          ${
+            t.conformidad === 'NO_CONFORME' && t.comentarioConformidad
+              ? `<button type="button" class="btn-mini verConformidadBtn" data-index="${index}">Ver</button>`
+              : ''
+          }
+        </td>
+        <td>
+          <select class="estadoSelect" data-index="${index}">
+            <option value="REGISTRADO" ${t.estado === 'REGISTRADO' ? 'selected' : ''}>Registrado</option>
+            <option value="EN_REVISION" ${t.estado === 'EN_REVISION' ? 'selected' : ''}>En revisión</option>
+            <option value="ATENDIDO"   ${t.estado === 'ATENDIDO'   ? 'selected' : ''}>Atendido</option>
+            <option value="DERIVADO"   ${t.estado === 'DERIVADO'   ? 'selected' : ''}>Derivado</option>
+          </select>
+        </td>
+      `;
+      tablaTickets.appendChild(tr);
+    });
+
+    if (!hayFiltrados) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="9">No hay comunicaciones que coincidan con el filtro seleccionado.</td>`;
+      tablaTickets.appendChild(tr);
+    }
+  }
+
+  // Cambios globales por change
+  document.addEventListener('change', (e) => {
+    // Cambio de estado (RRHH)
+    if (e.target.classList.contains('estadoSelect')) {
+      const index = parseInt(e.target.dataset.index, 10);
+      const nuevoEstado = e.target.value;
+      const tickets = obtenerTickets();
+      if (tickets[index]) {
+        tickets[index].estado = nuevoEstado;
+        guardarTickets(tickets);
+        cargarTicketsEnTabla();
+      }
+    }
+
+    // RESPONDER / DERIVAR (RRHH)
+    if (e.target.name === 'modoAtencion') {
+      if (e.target.value === 'RESPONDER') {
+        panelRespuesta.style.display = 'block';
+        panelDerivar.style.display   = 'none';
+      } else if (e.target.value === 'DERIVAR') {
+        panelRespuesta.style.display = 'none';
+        panelDerivar.style.display   = 'block';
+      }
+    }
+
+    // CONFORMIDAD (TRABAJADOR)
+    if (e.target.name === 'conformidad') {
+      if (e.target.value === 'NO_CONFORME') {
+        campoComentarioConformidad.style.display = 'block';
+      } else {
+        campoComentarioConformidad.style.display = 'none';
+      }
+    }
+  });
+
+  // Clicks globales
+  document.addEventListener('click', (e) => {
+    // Abrir panel de atención (RRHH)
+    if (e.target.classList.contains('atenderBtn')) {
+      const index = parseInt(e.target.dataset.index, 10);
+      const tickets = obtenerTickets();
+      const t = tickets[index];
+
+      indiceEnAtencion = index;
+      panelAtencion.style.display = 'block';
+      panelDetalleConformidad.style.display = 'none';
+      panelAtencionMsg.textContent = '';
+      textoRespuesta.value = '';
+      areaDerivar.value = '';
+
+      document.querySelectorAll('input[name="modoAtencion"]').forEach(r => r.checked = false);
+      panelRespuesta.style.display = 'none';
+      panelDerivar.style.display   = 'none';
+
+      panelAtencionInfo.textContent =
+        `${t.codigo} – ${t.tipo} – ${t.urgencia} – ` +
+        `${t.visibilidad === 'ANONIMO' ? 'Anónimo' : (t.usuario || '')}`;
+
+      window.scrollTo({ top: panelAtencion.offsetTop - 80, behavior: 'smooth' });
+    }
+
+    // Abrir panel de conformidad (TRABAJADOR)
+    if (e.target.classList.contains('conformidadBtn')) {
+      const index = parseInt(e.target.dataset.index, 10);
+      const tickets = obtenerTickets();
+      const t = tickets[index];
+
+      indiceConformidad = index;
+      panelConformidad.style.display = 'block';
+      panelConformidadMsg.textContent = '';
+      comentarioConformidad.value = '';
+      campoComentarioConformidad.style.display = 'none';
+
+      document.querySelectorAll('input[name="conformidad"]').forEach(r => r.checked = false);
+
+      let detalleRespuesta = '';
+      if (t.respuesta) {
+        detalleRespuesta = `Respuesta de RRHH: "${t.respuesta}"`;
+      } else if (t.areaDerivada) {
+        detalleRespuesta = `Derivado al área: ${t.areaDerivada}.`;
+      }
+
+      panelConformidadInfo.textContent =
+        `${t.codigo} – ${t.tipo} – Estado actual: ${t.estado}. ${detalleRespuesta}`;
+
+      window.scrollTo({ top: panelConformidad.offsetTop - 80, behavior: 'smooth' });
+    }
+
+    // Ver detalle de No conforme (RRHH)
+    if (e.target.classList.contains('verConformidadBtn')) {
+      const index = parseInt(e.target.dataset.index, 10);
+      const tickets = obtenerTickets();
+      const t = tickets[index];
+      if (!t) return;
+
+      panelDetalleConformidad.style.display = 'block';
+      panelAtencion.style.display = 'none';
+
+      detalleConformidadInfo.textContent =
+        `${t.codigo} – ${t.tipo} – Estado: ${t.estado} – Conformidad: ${textoConformidad(t)}`;
+
+      detalleConformidadTexto.textContent =
+        t.comentarioConformidad
+          ? t.comentarioConformidad
+          : 'El colaborador marcó "No conforme" pero no dejó comentario.';
+
+      window.scrollTo({ top: panelDetalleConformidad.offsetTop - 80, behavior: 'smooth' });
+    }
+  });
+
+  guardarAtencion.addEventListener('click', () => {
+    if (indiceEnAtencion === null) return;
+
+    const modo = document.querySelector('input[name="modoAtencion"]:checked');
+    if (!modo) {
+      alert('Seleccione si va a responder o derivar.');
+      return;
+    }
+
+    const tickets = obtenerTickets();
+    const t = tickets[indiceEnAtencion];
+
+    if (modo.value === 'RESPONDER') {
+      const texto = textoRespuesta.value.trim();
+      if (!texto) {
+        alert('Ingrese el texto de la respuesta.');
+        return;
+      }
+      t.respuesta = texto;
+      t.estado = 'ATENDIDO';
+      panelAtencionMsg.textContent = 'Se ha atendido la comunicación.';
+    } else if (modo.value === 'DERIVAR') {
+      const area = areaDerivar.value;
+      if (!area) {
+        alert('Seleccione el área de destino.');
+        return;
+      }
+      t.areaDerivada = area;
+      t.estado = 'DERIVADO';
+      panelAtencionMsg.textContent = `Se ha derivado la comunicación al área de ${area}.`;
+    }
+
+    guardarTickets(tickets);
+    cargarTicketsEnTabla();
+  });
+
+  cancelarAtencion.addEventListener('click', () => {
+    panelAtencion.style.display = 'none';
+    indiceEnAtencion = null;
+  });
+
+  if (filtroConformidadAdmin) {
+    filtroConformidadAdmin.addEventListener('change', () => {
+      cargarTicketsEnTabla();
+    });
+  }
+
+  refrescarBtn.addEventListener('click', () => {
+    cargarTicketsEnTabla();
+  });
+
+  cerrarDetalleConformidadBtn.addEventListener('click', () => {
+    panelDetalleConformidad.style.display = 'none';
+  });
+</script>
+</body>
+</html>

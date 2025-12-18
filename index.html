@@ -32,13 +32,14 @@
       gap: 12px;
     }
 
-    /* Logo + texto */
+    /* Marca: logo + texto */
     .brand {
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
       user-select: none;
+      white-space: nowrap;
     }
     .brand img {
       height: 36px;
@@ -90,6 +91,7 @@
     .badge.ambar { background: #ffb020; }
     .badge.azul { background: #2979ff; }
     .desc { font-size: 12px; color: #666; margin-top: -4px; margin-left: 22px; }
+
     .field { margin-top: 16px; }
     .field label { font-weight: 500; margin-bottom: 4px; }
     input[type="text"], input[type="password"], textarea, select {
@@ -103,11 +105,13 @@
       background: #fff;
     }
     textarea { min-height: 110px; }
+
     .actions {
       margin-top: 20px;
       display: flex;
       justify-content: flex-end;
       gap: 12px;
+      flex-wrap: wrap;
     }
     button {
       border-radius: 999px;
@@ -219,7 +223,6 @@
     }
 
     .btn-mini {
-      margin-left: 6px;
       padding: 2px 10px;
       font-size: 11px;
       border-radius: 999px;
@@ -227,10 +230,10 @@
       background: #f5f7ff;
       cursor: pointer;
       white-space: nowrap;
+      margin-right: 6px;
+      margin-bottom: 6px;
     }
-    .btn-mini:hover {
-      background: #e1e6ff;
-    }
+    .btn-mini:hover { background: #e1e6ff; }
 
     /* Badge conformidad */
     .conf-badge {
@@ -270,9 +273,8 @@
 
   <!-- HEADER -->
   <header>
-    <!-- ✅ Logo + SICO (click = volver al inicio según rol) -->
+    <!-- ✅ Logo + SICO -->
     <div class="brand" id="brandHome" title="Volver al inicio">
-      <!-- IMPORTANTE: el archivo debe existir en tu repo (raíz). Si lo guardaste como otro nombre, cámbialo aquí -->
       <img src="logoV2.png" alt="Logo SICO">
       <div class="brand-text">SICO</div>
     </div>
@@ -282,7 +284,7 @@
       <div class="subtitle">Banco de la Nación – Prototipo de registro y atención de comunicaciones.</div>
     </div>
 
-    <!-- ✅ Botones globales -->
+    <!-- ✅ Acciones globales -->
     <div class="header-actions">
       <button class="btn-sec" id="btnInicio" type="button">Volver al inicio</button>
       <button class="btn-danger" id="btnLogout" type="button">Logout</button>
@@ -325,7 +327,6 @@
 
     <form id="sicoForm">
       <div class="grid">
-        <!-- Columna 1 -->
         <div class="card">
           <h2>¿Cómo desea registrar su comunicación?</h2>
           <div class="radio-group">
@@ -344,7 +345,6 @@
           </div>
         </div>
 
-        <!-- Columna 2 -->
         <div class="card">
           <h2>Seleccione el nivel de urgencia</h2>
           <div class="radio-group">
@@ -372,7 +372,6 @@
           </div>
         </div>
 
-        <!-- Columna 3 -->
         <div class="card">
           <h2>¿Qué desea registrar?</h2>
           <div class="radio-group">
@@ -398,7 +397,6 @@
         </div>
       </div>
 
-      <!-- Redacción -->
       <div class="field">
         <label for="titulo">Título de la comunicación</label>
         <input type="text" id="titulo" name="titulo" maxlength="120" required
@@ -418,7 +416,6 @@
       </div>
     </form>
 
-    <!-- Ticket -->
     <div class="ticket" id="ticketBox">
       <h2>✅ Comunicación registrada correctamente</h2>
       <p>Su número de seguimiento es:</p>
@@ -427,7 +424,6 @@
       <p class="small-muted" id="ticketMeta"></p>
     </div>
 
-    <!-- LISTA DE COMUNICACIONES DEL TRABAJADOR (ETAPA 3) -->
     <div id="misComunicaciones" class="card" style="margin-top:24px;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
         <div>
@@ -451,9 +447,7 @@
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="tablaMisTickets">
-          <!-- filas dinámicas -->
-        </tbody>
+        <tbody id="tablaMisTickets"></tbody>
       </table>
 
       <div class="small-muted" style="margin-top:8px;">
@@ -461,7 +455,6 @@
       </div>
     </div>
 
-    <!-- PANEL DE CONFORMIDAD -->
     <div id="panelConformidad" class="card" style="margin-top:16px; display:none;">
       <h3 style="margin:0 0 8px; font-size:15px;">Conformidad de atención</h3>
       <div class="small-muted" id="panelConformidadInfo"></div>
@@ -492,25 +485,20 @@
     </div>
   </section>
 
-  <!-- 🧮 VISTA RRHH (Etapa 2 + mejoras) -->
+  <!-- 🧮 VISTA RRHH -->
   <section id="adminView">
     <div class="admin-header">
       <div>
         <h2 style="font-size:18px; margin:0 0 4px;">Panel de RRHH – Evaluación y atención</h2>
-        <div class="subtitle">
-          Revise las comunicaciones registradas, actualice su estado y defina el tipo de atención.
-        </div>
+        <div class="subtitle">Revise las comunicaciones, actualice estado y atienda/derive.</div>
       </div>
-      <!-- ✅ Actualizar funcional -->
       <button class="btn-sec" id="refrescarBtn" type="button">Actualizar lista</button>
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px; flex-wrap:wrap;">
       <div class="subtitle">Filtros y seguimiento</div>
       <div style="display:flex; align-items:center; gap:8px;">
-        <label for="filtroConformidadAdmin" class="subtitle" style="margin:0;">
-          Filtrar por conformidad:
-        </label>
+        <label for="filtroConformidadAdmin" class="subtitle" style="margin:0;">Filtrar por conformidad:</label>
         <select id="filtroConformidadAdmin" style="min-width: 160px;">
           <option value="TODOS">Todos</option>
           <option value="PENDIENTE">Pendiente</option>
@@ -534,12 +522,10 @@
           <th>Acciones</th>
         </tr>
       </thead>
-      <tbody id="tablaTickets">
-        <!-- filas dinámicas -->
-      </tbody>
+      <tbody id="tablaTickets"></tbody>
     </table>
 
-    <!-- ✅ Panel: detalle del ticket (RRHH ve título/detalle) -->
+    <!-- ✅ Detalle ticket RRHH -->
     <div id="panelDetalleTicket" class="card" style="margin-top:16px; display:none;">
       <h3 style="margin:0 0 8px; font-size:15px;">Detalle de la comunicación</h3>
       <div class="small-muted" id="detalleTicketInfo"></div>
@@ -581,7 +567,7 @@
 
       <div class="field" id="panelRespuesta" style="display:none;">
         <label for="textoRespuesta">Respuesta para el trabajador</label>
-        <textarea id="textoRespuesta" placeholder="Redacte la respuesta que se enviará al trabajador..."></textarea>
+        <textarea id="textoRespuesta" placeholder="Redacte la respuesta..."></textarea>
       </div>
 
       <div class="field" id="panelDerivar" style="display:none;">
@@ -603,7 +589,6 @@
       <div class="small-muted" id="panelAtencionMsg" style="margin-top:8px;"></div>
     </div>
 
-    <!-- Detalle de conformidad (RRHH) -->
     <div id="panelDetalleConformidad" class="card" style="margin-top:16px; display:none;">
       <h3 style="margin:0 0 8px; font-size:15px;">Detalle de conformidad del trabajador</h3>
       <div class="small-muted" id="detalleConformidadInfo"></div>
@@ -615,14 +600,15 @@
     </div>
 
     <div class="small-muted" style="margin-top:8px;">
-      *Este panel es un prototipo. Los datos se almacenan localmente en el navegador (localStorage).
+      *Prototipo: datos almacenados en localStorage del navegador.
     </div>
   </section>
+
 </div>
 
 <script>
   // =========================
-  // REFERENCIAS A LAS VISTAS
+  // VISTAS + NAV
   // =========================
   const loginView = document.getElementById('loginView');
   const formView  = document.getElementById('formView');
@@ -663,18 +649,14 @@
     };
   }
 
-  // ✅ Volver al inicio (según rol)
   function irInicioSegunRol() {
     const s = getSesion();
-    if (!s.usuario || !s.rol) {
-      mostrarVistaLogin();
-      return;
-    }
-    if (s.rol === 'TRABAJADOR') mostrarVistaTrabajador();
-    if (s.rol === 'RRHH') mostrarVistaRRHH();
+    if (!s.usuario || !s.rol) return mostrarVistaLogin();
+    if (s.rol === 'TRABAJADOR') return mostrarVistaTrabajador();
+    if (s.rol === 'RRHH') return mostrarVistaRRHH();
+    mostrarVistaLogin();
   }
 
-  // ✅ Logout (ambos roles)
   function logout() {
     localStorage.removeItem('sicoUsuario');
     localStorage.removeItem('sicoRol');
@@ -724,7 +706,7 @@
       localStorage.setItem('sicoRol', usuario.rol);
 
       if (usuario.rol === 'TRABAJADOR') mostrarVistaTrabajador();
-      if (usuario.rol === 'RRHH') mostrarVistaRRHH();
+      else mostrarVistaRRHH();
     } else {
       loginError.textContent = 'Usuario o contraseña incorrectos. Intente nuevamente.';
       loginError.style.display = 'block';
@@ -738,7 +720,7 @@
     loginUser.focus();
   });
 
-  // ✅ Iniciar siempre en login
+  // ✅ iniciar en login
   mostrarVistaLogin();
 
   // =========================
@@ -766,7 +748,7 @@
   }
 
   // =========================
-  // REGISTRO SICO (ETAPA 1)
+  // ETAPA 1: REGISTRO
   // =========================
   const form          = document.getElementById('sicoForm');
   const ticketBox     = document.getElementById('ticketBox');
@@ -794,16 +776,10 @@
     const fecha  = new Date().toLocaleString('es-PE');
 
     const ticket = {
-      codigo,
-      fecha,
-      visibilidad,
-      urgencia,
-      tipo,
-      titulo,
-      detalle,
+      codigo, fecha, visibilidad, urgencia, tipo, titulo, detalle,
       usuario: usuarioSesion,
       estado: 'REGISTRADO',
-      conformidad: null,            // 'CONFORME' | 'NO_CONFORME' | null
+      conformidad: null,
       comentarioConformidad: '',
       respuesta: '',
       areaDerivada: ''
@@ -817,19 +793,15 @@
 
     ticketBox.style.display = 'block';
     form.reset();
-
     cargarMisTickets();
-    window.scrollTo({ top: ticketBox.offsetTop - 80, behavior: 'smooth' });
   });
 
   limpiarBtn.addEventListener('click', () => {
-    if (confirm('¿Desea limpiar el formulario?')) {
-      form.reset();
-    }
+    if (confirm('¿Desea limpiar el formulario?')) form.reset();
   });
 
   // =========================
-  // ETAPA 3: Mis comunicaciones (TRABAJADOR)
+  // ETAPA 3: Mis comunicaciones
   // =========================
   const refrescarMisBtn            = document.getElementById('refrescarMisBtn');
   const tablaMisTickets            = document.getElementById('tablaMisTickets');
@@ -857,14 +829,12 @@
     const tickets = obtenerTickets();
     tablaMisTickets.innerHTML = '';
 
-    let tieneAlguno = false;
-
-    tickets.forEach((t, index) => {
+    let tiene = false;
+    tickets.forEach((t, idx) => {
       if (t.usuario !== usuarioSesion) return;
-      tieneAlguno = true;
+      tiene = true;
 
       const puedeRevisar = (t.estado === 'ATENDIDO' || t.estado === 'DERIVADO');
-
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${t.codigo}</td>
@@ -876,7 +846,7 @@
         <td>
           ${
             puedeRevisar
-              ? `<button type="button" class="btn-mini conformidadBtn" data-index="${index}">Revisar</button>`
+              ? `<button type="button" class="btn-mini conformidadBtn" data-index="${idx}">Revisar</button>`
               : '<span class="small-muted">En proceso</span>'
           }
         </td>
@@ -884,25 +854,20 @@
       tablaMisTickets.appendChild(tr);
     });
 
-    if (!tieneAlguno) {
+    if (!tiene) {
       const tr = document.createElement('tr');
       tr.innerHTML = `<td colspan="7">Aún no ha registrado comunicaciones.</td>`;
       tablaMisTickets.appendChild(tr);
     }
   }
 
-  refrescarMisBtn.addEventListener('click', () => {
-    cargarMisTickets();
-  });
+  refrescarMisBtn.addEventListener('click', cargarMisTickets);
 
   guardarConformidad.addEventListener('click', () => {
     if (indiceConformidad === null) return;
 
     const seleccion = document.querySelector('input[name="conformidad"]:checked');
-    if (!seleccion) {
-      alert('Seleccione si está conforme o no con la atención.');
-      return;
-    }
+    if (!seleccion) return alert('Seleccione si está conforme o no con la atención.');
 
     const tickets = obtenerTickets();
     const t = tickets[indiceConformidad];
@@ -912,17 +877,14 @@
 
     if (seleccion.value === 'NO_CONFORME') {
       const comentario = comentarioConformidad.value.trim();
-      if (!comentario) {
-        alert('Por favor ingrese un comentario para indicar por qué no está conforme.');
-        return;
-      }
+      if (!comentario) return alert('Ingrese un comentario para "No conforme".');
       t.comentarioConformidad = comentario;
     } else {
       t.comentarioConformidad = '';
     }
 
     guardarTickets(tickets);
-    panelConformidadMsg.textContent = 'Su conformidad ha sido registrada. ¡Gracias por su respuesta!';
+    panelConformidadMsg.textContent = 'Su conformidad ha sido registrada. ¡Gracias!';
     cargarMisTickets();
   });
 
@@ -932,40 +894,39 @@
   });
 
   // =========================
-  // PANEL RRHH (ETAPA 2)
+  // RRHH
   // =========================
   const tablaTickets = document.getElementById('tablaTickets');
   const refrescarBtn = document.getElementById('refrescarBtn');
-  const filtroConformidadAdmin      = document.getElementById('filtroConformidadAdmin');
+  const filtroConformidadAdmin = document.getElementById('filtroConformidadAdmin');
 
-  const panelAtencion               = document.getElementById('panelAtencion');
-  const panelAtencionInfo           = document.getElementById('panelAtencionInfo');
-  const panelAtencionMsg            = document.getElementById('panelAtencionMsg');
-  const panelRespuesta              = document.getElementById('panelRespuesta');
-  const panelDerivar                = document.getElementById('panelDerivar');
-  const textoRespuesta              = document.getElementById('textoRespuesta');
-  const areaDerivar                 = document.getElementById('areaDerivar');
-  const guardarAtencion             = document.getElementById('guardarAtencion');
-  const cancelarAtencion            = document.getElementById('cancelarAtencion');
+  const panelAtencion     = document.getElementById('panelAtencion');
+  const panelAtencionInfo = document.getElementById('panelAtencionInfo');
+  const panelAtencionMsg  = document.getElementById('panelAtencionMsg');
+  const panelRespuesta    = document.getElementById('panelRespuesta');
+  const panelDerivar      = document.getElementById('panelDerivar');
+  const textoRespuesta    = document.getElementById('textoRespuesta');
+  const areaDerivar       = document.getElementById('areaDerivar');
+  const guardarAtencion   = document.getElementById('guardarAtencion');
+  const cancelarAtencion  = document.getElementById('cancelarAtencion');
 
-  const panelDetalleConformidad     = document.getElementById('panelDetalleConformidad');
-  const detalleConformidadInfo      = document.getElementById('detalleConformidadInfo');
-  const detalleConformidadTexto     = document.getElementById('detalleConformidadTexto');
+  const panelDetalleConformidad = document.getElementById('panelDetalleConformidad');
+  const detalleConformidadInfo  = document.getElementById('detalleConformidadInfo');
+  const detalleConformidadTexto = document.getElementById('detalleConformidadTexto');
   const cerrarDetalleConformidadBtn = document.getElementById('cerrarDetalleConformidad');
 
-  // ✅ Panel detalle ticket
-  const panelDetalleTicket          = document.getElementById('panelDetalleTicket');
-  const detalleTicketInfo           = document.getElementById('detalleTicketInfo');
-  const detalleTicketTitulo         = document.getElementById('detalleTicketTitulo');
-  const detalleTicketDetalle        = document.getElementById('detalleTicketDetalle');
-  const detalleTicketRespuestaWrap  = document.getElementById('detalleTicketRespuestaWrap');
-  const detalleTicketRespuesta      = document.getElementById('detalleTicketRespuesta');
-  const cerrarDetalleTicketBtn      = document.getElementById('cerrarDetalleTicket');
+  const panelDetalleTicket = document.getElementById('panelDetalleTicket');
+  const detalleTicketInfo  = document.getElementById('detalleTicketInfo');
+  const detalleTicketTitulo = document.getElementById('detalleTicketTitulo');
+  const detalleTicketDetalle = document.getElementById('detalleTicketDetalle');
+  const detalleTicketRespuestaWrap = document.getElementById('detalleTicketRespuestaWrap');
+  const detalleTicketRespuesta = document.getElementById('detalleTicketRespuesta');
+  const cerrarDetalleTicketBtn = document.getElementById('cerrarDetalleTicket');
 
   let indiceEnAtencion = null;
 
   function badgeEstado(estado) {
-    const safe = (estado || 'REGISTRADO');
+    const safe = estado || 'REGISTRADO';
     return `<span class="estado-badge estado-${safe}">${safe.replace('_', ' ')}</span>`;
   }
 
@@ -976,17 +937,20 @@
   }
 
   function usuarioMostrable(t) {
-    if (t.visibilidad === 'ANONIMO') return 'Anónimo';
-    return (t.usuario || '');
+    return t.visibilidad === 'ANONIMO' ? 'Anónimo' : (t.usuario || '');
+  }
+
+  function cerrarPanelesRRHH() {
+    panelAtencion.style.display = 'none';
+    panelDetalleConformidad.style.display = 'none';
+    panelDetalleTicket.style.display = 'none';
+    indiceEnAtencion = null;
   }
 
   function cargarTicketsEnTabla() {
     const tickets = obtenerTickets();
     tablaTickets.innerHTML = '';
-    panelAtencion.style.display = 'none';
-    panelDetalleConformidad.style.display = 'none';
-    panelDetalleTicket.style.display = 'none';
-    indiceEnAtencion = null;
+    cerrarPanelesRRHH();
 
     const filtro = filtroConformidadAdmin ? filtroConformidadAdmin.value : 'TODOS';
 
@@ -997,22 +961,19 @@
       return;
     }
 
-    let hayFiltrados = false;
+    let hay = false;
 
-    tickets.forEach((t, index) => {
+    tickets.forEach((t, idx) => {
       const confTxt = textoConformidad(t);
-
-      if (filtro === 'PENDIENTE'   && confTxt !== 'Pendiente')   return;
-      if (filtro === 'CONFORME'    && confTxt !== 'Conforme')    return;
+      if (filtro === 'PENDIENTE' && confTxt !== 'Pendiente') return;
+      if (filtro === 'CONFORME' && confTxt !== 'Conforme') return;
       if (filtro === 'NO_CONFORME' && confTxt !== 'No conforme') return;
 
-      hayFiltrados = true;
+      hay = true;
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>
-          ${t.codigo}
-        </td>
+        <td>${t.codigo}</td>
         <td>${t.fecha}</td>
         <td>${usuarioMostrable(t)}</td>
         <td>${t.tipo}</td>
@@ -1023,15 +984,15 @@
           ${badgeConformidad(t)}
           ${
             t.conformidad === 'NO_CONFORME' && t.comentarioConformidad
-              ? `<button type="button" class="btn-mini verConformidadBtn" data-index="${index}">Ver</button>`
+              ? `<button type="button" class="btn-mini verConformidadBtn" data-index="${idx}">Ver</button>`
               : ''
           }
         </td>
         <td>
-          <button type="button" class="btn-mini verDetalleBtn" data-index="${index}">Ver detalle</button>
-          <button type="button" class="btn-mini atenderBtn" data-index="${index}">Atender</button>
-          <div style="margin-top:6px;">
-            <select class="estadoSelect" data-index="${index}">
+          <button type="button" class="btn-mini verDetalleBtn" data-index="${idx}">Ver detalle</button>
+          <button type="button" class="btn-mini atenderBtn" data-index="${idx}">Atender</button>
+          <div>
+            <select class="estadoSelect" data-index="${idx}">
               <option value="REGISTRADO" ${t.estado === 'REGISTRADO' ? 'selected' : ''}>Registrado</option>
               <option value="EN_REVISION" ${t.estado === 'EN_REVISION' ? 'selected' : ''}>En revisión</option>
               <option value="ATENDIDO"   ${t.estado === 'ATENDIDO'   ? 'selected' : ''}>Atendido</option>
@@ -1043,72 +1004,73 @@
       tablaTickets.appendChild(tr);
     });
 
-    if (!hayFiltrados) {
+    if (!hay) {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="9">No hay comunicaciones que coincidan con el filtro seleccionado.</td>`;
+      tr.innerHTML = `<td colspan="9">No hay comunicaciones que coincidan con el filtro.</td>`;
       tablaTickets.appendChild(tr);
     }
   }
 
-  // ✅ Actualizar funcional (RRHH)
-  refrescarBtn.addEventListener('click', () => {
-    cargarTicketsEnTabla();
-  });
+  refrescarBtn.addEventListener('click', cargarTicketsEnTabla);
+  filtroConformidadAdmin.addEventListener('change', cargarTicketsEnTabla);
 
-  if (filtroConformidadAdmin) {
-    filtroConformidadAdmin.addEventListener('change', () => {
-      cargarTicketsEnTabla();
-    });
-  }
-
-  // =========================
-  // EVENTOS GLOBALES
-  // =========================
   document.addEventListener('change', (e) => {
-    // Cambio de estado (RRHH)
     if (e.target.classList.contains('estadoSelect')) {
-      const index = parseInt(e.target.dataset.index, 10);
-      const nuevoEstado = e.target.value;
+      const idx = parseInt(e.target.dataset.index, 10);
+      const nuevo = e.target.value;
       const tickets = obtenerTickets();
-      if (tickets[index]) {
-        tickets[index].estado = nuevoEstado;
+      if (tickets[idx]) {
+        tickets[idx].estado = nuevo;
         guardarTickets(tickets);
         cargarTicketsEnTabla();
       }
     }
 
-    // RESPONDER / DERIVAR (RRHH)
     if (e.target.name === 'modoAtencion') {
       if (e.target.value === 'RESPONDER') {
         panelRespuesta.style.display = 'block';
-        panelDerivar.style.display   = 'none';
-      } else if (e.target.value === 'DERIVAR') {
+        panelDerivar.style.display = 'none';
+      } else {
         panelRespuesta.style.display = 'none';
-        panelDerivar.style.display   = 'block';
+        panelDerivar.style.display = 'block';
       }
     }
 
-    // CONFORMIDAD (TRABAJADOR)
     if (e.target.name === 'conformidad') {
-      if (e.target.value === 'NO_CONFORME') {
-        campoComentarioConformidad.style.display = 'block';
-      } else {
-        campoComentarioConformidad.style.display = 'none';
-      }
+      campoComentarioConformidad.style.display = (e.target.value === 'NO_CONFORME') ? 'block' : 'none';
     }
   });
 
   document.addEventListener('click', (e) => {
-    // ✅ Abrir panel detalle ticket (RRHH)
-    if (e.target.classList.contains('verDetalleBtn')) {
-      const index = parseInt(e.target.dataset.index, 10);
+    if (e.target.classList.contains('conformidadBtn')) {
+      const idx = parseInt(e.target.dataset.index, 10);
       const tickets = obtenerTickets();
-      const t = tickets[index];
+      const t = tickets[idx];
       if (!t) return;
 
+      indiceConformidad = idx;
+      panelConformidad.style.display = 'block';
+      panelConformidadMsg.textContent = '';
+      comentarioConformidad.value = '';
+      campoComentarioConformidad.style.display = 'none';
+      document.querySelectorAll('input[name="conformidad"]').forEach(r => r.checked = false);
+
+      let detalleResp = '';
+      if (t.respuesta) detalleResp = `Respuesta de RRHH: "${t.respuesta}"`;
+      else if (t.areaDerivada) detalleResp = `Derivado al área: ${t.areaDerivada}.`;
+
+      panelConformidadInfo.textContent = `${t.codigo} – ${t.tipo} – Estado: ${t.estado}. ${detalleResp}`;
+      window.scrollTo({ top: panelConformidad.offsetTop - 80, behavior: 'smooth' });
+    }
+
+    if (e.target.classList.contains('verDetalleBtn')) {
+      const idx = parseInt(e.target.dataset.index, 10);
+      const tickets = obtenerTickets();
+      const t = tickets[idx];
+      if (!t) return;
+
+      cerrarPanelesRRHH();
       panelDetalleTicket.style.display = 'block';
-      panelAtencion.style.display = 'none';
-      panelDetalleConformidad.style.display = 'none';
 
       detalleTicketInfo.textContent =
         `${t.codigo} – ${t.tipo} – ${t.urgencia} – Usuario: ${usuarioMostrable(t)} – Estado: ${t.estado}`;
@@ -1119,6 +1081,7 @@
       let extra = '';
       if (t.respuesta) extra = `Respuesta de RRHH:\n${t.respuesta}`;
       else if (t.areaDerivada) extra = `Derivado al área: ${t.areaDerivada}.`;
+
       if (extra) {
         detalleTicketRespuestaWrap.style.display = 'block';
         detalleTicketRespuesta.textContent = extra;
@@ -1130,117 +1093,66 @@
       window.scrollTo({ top: panelDetalleTicket.offsetTop - 80, behavior: 'smooth' });
     }
 
-    // Abrir panel de atención (RRHH)
     if (e.target.classList.contains('atenderBtn')) {
-      const index = parseInt(e.target.dataset.index, 10);
+      const idx = parseInt(e.target.dataset.index, 10);
       const tickets = obtenerTickets();
-      const t = tickets[index];
+      const t = tickets[idx];
       if (!t) return;
 
-      indiceEnAtencion = index;
+      cerrarPanelesRRHH();
+      indiceEnAtencion = idx;
       panelAtencion.style.display = 'block';
-      panelDetalleConformidad.style.display = 'none';
-      panelDetalleTicket.style.display = 'none';
 
       panelAtencionMsg.textContent = '';
       textoRespuesta.value = '';
       areaDerivar.value = '';
-
       document.querySelectorAll('input[name="modoAtencion"]').forEach(r => r.checked = false);
       panelRespuesta.style.display = 'none';
-      panelDerivar.style.display   = 'none';
+      panelDerivar.style.display = 'none';
 
-      panelAtencionInfo.textContent =
-        `${t.codigo} – ${t.tipo} – ${t.urgencia} – ${usuarioMostrable(t)}`;
-
+      panelAtencionInfo.textContent = `${t.codigo} – ${t.tipo} – ${t.urgencia} – ${usuarioMostrable(t)}`;
       window.scrollTo({ top: panelAtencion.offsetTop - 80, behavior: 'smooth' });
     }
 
-    // Abrir panel de conformidad (TRABAJADOR)
-    if (e.target.classList.contains('conformidadBtn')) {
-      const index = parseInt(e.target.dataset.index, 10);
-      const tickets = obtenerTickets();
-      const t = tickets[index];
-      if (!t) return;
-
-      indiceConformidad = index;
-      panelConformidad.style.display = 'block';
-      panelConformidadMsg.textContent = '';
-      comentarioConformidad.value = '';
-      campoComentarioConformidad.style.display = 'none';
-      document.querySelectorAll('input[name="conformidad"]').forEach(r => r.checked = false);
-
-      let detalleRespuesta = '';
-      if (t.respuesta) detalleRespuesta = `Respuesta de RRHH: "${t.respuesta}"`;
-      else if (t.areaDerivada) detalleRespuesta = `Derivado al área: ${t.areaDerivada}.`;
-
-      panelConformidadInfo.textContent =
-        `${t.codigo} – ${t.tipo} – Estado actual: ${t.estado}. ${detalleRespuesta}`;
-
-      window.scrollTo({ top: panelConformidad.offsetTop - 80, behavior: 'smooth' });
-    }
-
-    // Ver detalle de No conforme (RRHH)
     if (e.target.classList.contains('verConformidadBtn')) {
-      const index = parseInt(e.target.dataset.index, 10);
+      const idx = parseInt(e.target.dataset.index, 10);
       const tickets = obtenerTickets();
-      const t = tickets[index];
+      const t = tickets[idx];
       if (!t) return;
 
+      cerrarPanelesRRHH();
       panelDetalleConformidad.style.display = 'block';
-      panelAtencion.style.display = 'none';
-      panelDetalleTicket.style.display = 'none';
 
       detalleConformidadInfo.textContent =
         `${t.codigo} – ${t.tipo} – Estado: ${t.estado} – Conformidad: ${textoConformidad(t)}`;
 
       detalleConformidadTexto.textContent =
-        t.comentarioConformidad
-          ? t.comentarioConformidad
-          : 'El colaborador marcó "No conforme" pero no dejó comentario.';
+        t.comentarioConformidad ? t.comentarioConformidad : 'Marcó "No conforme" pero no dejó comentario.';
 
       window.scrollTo({ top: panelDetalleConformidad.offsetTop - 80, behavior: 'smooth' });
     }
   });
 
-  cerrarDetalleConformidadBtn.addEventListener('click', () => {
-    panelDetalleConformidad.style.display = 'none';
-  });
-
-  cerrarDetalleTicketBtn.addEventListener('click', () => {
-    panelDetalleTicket.style.display = 'none';
-  });
-
-  // Guardar atención (RRHH)
   guardarAtencion.addEventListener('click', () => {
     if (indiceEnAtencion === null) return;
 
     const modo = document.querySelector('input[name="modoAtencion"]:checked');
-    if (!modo) {
-      alert('Seleccione si va a responder o derivar.');
-      return;
-    }
+    if (!modo) return alert('Seleccione si va a responder o derivar.');
 
     const tickets = obtenerTickets();
     const t = tickets[indiceEnAtencion];
     if (!t) return;
 
     if (modo.value === 'RESPONDER') {
-      const texto = textoRespuesta.value.trim();
-      if (!texto) {
-        alert('Ingrese el texto de la respuesta.');
-        return;
-      }
-      t.respuesta = texto;
+      const txt = textoRespuesta.value.trim();
+      if (!txt) return alert('Ingrese la respuesta.');
+      t.respuesta = txt;
       t.areaDerivada = '';
       t.estado = 'ATENDIDO';
       panelAtencionMsg.textContent = 'Se ha atendido la comunicación.';
-    } else if (modo.value === 'DERIVAR') {
+    } else {
       const area = areaDerivar.value;
-      if (!area) {
-        alert('Seleccione el área de destino.');
-        return;
-      }
+      if (!area) return alert('Seleccione el área.');
       t.areaDerivada = area;
       t.respuesta = '';
       t.estado = 'DERIVADO';
@@ -1251,11 +1163,9 @@
     cargarTicketsEnTabla();
   });
 
-  cancelarAtencion.addEventListener('click', () => {
-    panelAtencion.style.display = 'none';
-    indiceEnAtencion = null;
-  });
+  cancelarAtencion.addEventListener('click', cerrarPanelesRRHH);
+  cerrarDetalleConformidadBtn.addEventListener('click', () => panelDetalleConformidad.style.display = 'none');
+  cerrarDetalleTicketBtn.addEventListener('click', () => panelDetalleTicket.style.display = 'none');
 </script>
 </body>
 </html>
-

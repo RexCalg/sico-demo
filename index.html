@@ -94,7 +94,7 @@
 
     .field { margin-top: 16px; }
     .field label { font-weight: 500; margin-bottom: 4px; }
-    input[type="text"], input[type="password"], textarea, select {
+    input[type="text"], input[type="password"], textarea, select, input[type="date"] {
       width: 100%;
       padding: 8px 10px;
       border-radius: 8px;
@@ -248,6 +248,19 @@
     .conf-CONFORME { background: #e3f9e5; color: #256b38; }
     .conf-NO_CONFORME { background: #fff4e5; color: #8a4b16; }
 
+    /* Vencimiento */
+    .due-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .due-ok { background: #e9f5ff; color: #0b4c87; }
+    .due-soon { background: #fff4e5; color: #8a4b16; }
+    .due-over { background: #fde8e8; color: #8a1f1f; }
+
     /* Opciones alineadas */
     .option-row {
       display: flex;
@@ -257,6 +270,43 @@
     }
     .option-row input { margin: 0; }
     .option-row span { font-size: 14px; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 999;
+    }
+    .modal {
+      width: 100%;
+      max-width: 520px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+      padding: 18px 18px 16px;
+      border: 1px solid #e7e8f0;
+    }
+    .modal h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .modal p {
+      margin: 0;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.35;
+    }
+    .modal-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
 
     @media (max-width: 640px) {
       .app { padding: 18px 16px 24px; }
@@ -269,11 +319,22 @@
 </head>
 
 <body>
+
+<!-- ✅ MODAL CONFIRMACIÓN -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle">Mensaje</h3>
+    <p id="modalMessage">...</p>
+    <div class="modal-actions">
+      <button class="btn-primary" id="modalCloseBtn" type="button">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
 
   <!-- HEADER -->
   <header>
-    <!-- ✅ Logo + SICO -->
     <div class="brand" id="brandHome" title="Volver al inicio">
       <img src="logoV2.png" alt="Logo SICO">
       <div class="brand-text">SICO</div>
@@ -284,14 +345,13 @@
       <div class="subtitle">Banco de la Nación – Prototipo de registro y atención de comunicaciones.</div>
     </div>
 
-    <!-- ✅ Acciones globales -->
     <div class="header-actions">
       <button class="btn-sec" id="btnInicio" type="button">Volver al inicio</button>
       <button class="btn-danger" id="btnLogout" type="button">Logout</button>
     </div>
   </header>
 
-  <!-- 🔐 VISTA LOGIN -->
+  <!-- LOGIN -->
   <section id="loginView" class="active">
     <div class="login-box">
       <div class="login-title">Ingreso de usuario</div>
@@ -318,7 +378,7 @@
     </div>
   </section>
 
-  <!-- 📝 VISTA FORM (Etapa 1 + Etapa 3) -->
+  <!-- TRABAJADOR -->
   <section id="formView">
     <h2 style="font-size:18px; margin: 0 0 12px;">Registro de sugerencias, reclamos y propuestas</h2>
     <div class="subtitle" style="margin-bottom:16px;">
@@ -397,6 +457,13 @@
         </div>
       </div>
 
+      <!-- ✅ Fecha límite (nuevo) -->
+      <div class="field">
+        <label for="fechaLimite">Fecha límite de respuesta</label>
+        <input type="date" id="fechaLimite" name="fechaLimite" required />
+        <div class="small-muted">No se permiten fechas pasadas. Seleccione una fecha desde hoy en adelante.</div>
+      </div>
+
       <div class="field">
         <label for="titulo">Título de la comunicación</label>
         <input type="text" id="titulo" name="titulo" maxlength="120" required
@@ -440,6 +507,7 @@
           <tr>
             <th>Código</th>
             <th>Fecha</th>
+            <th>Fecha límite</th>
             <th>Tipo</th>
             <th>Urgencia</th>
             <th>Estado</th>
@@ -485,12 +553,12 @@
     </div>
   </section>
 
-  <!-- 🧮 VISTA RRHH -->
+  <!-- RRHH -->
   <section id="adminView">
     <div class="admin-header">
       <div>
         <h2 style="font-size:18px; margin:0 0 4px;">Panel de RRHH – Evaluación y atención</h2>
-        <div class="subtitle">Revise las comunicaciones, actualice estado y atienda/derive.</div>
+        <div class="subtitle">Revise las comunicaciones, fecha límite, estado y atienda/derive.</div>
       </div>
       <button class="btn-sec" id="refrescarBtn" type="button">Actualizar lista</button>
     </div>
@@ -513,6 +581,7 @@
         <tr>
           <th>Código</th>
           <th>Fecha</th>
+          <th>Fecha límite</th>
           <th>Usuario</th>
           <th>Tipo</th>
           <th>Urgencia</th>
@@ -525,7 +594,6 @@
       <tbody id="tablaTickets"></tbody>
     </table>
 
-    <!-- ✅ Detalle ticket RRHH -->
     <div id="panelDetalleTicket" class="card" style="margin-top:16px; display:none;">
       <h3 style="margin:0 0 8px; font-size:15px;">Detalle de la comunicación</h3>
       <div class="small-muted" id="detalleTicketInfo"></div>
@@ -607,6 +675,27 @@
 </div>
 
 <script>
+  // =========================
+  // MODAL (reutilizable)
+  // =========================
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalMessage = document.getElementById('modalMessage');
+  const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+  function abrirModal(msg) {
+    modalMessage.textContent = msg;
+    modalOverlay.style.display = 'flex';
+    modalCloseBtn.focus();
+  }
+  function cerrarModal() {
+    modalOverlay.style.display = 'none';
+  }
+
+  modalCloseBtn.addEventListener('click', cerrarModal);
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) cerrarModal();
+  });
+
   // =========================
   // VISTAS + NAV
   // =========================
@@ -724,6 +813,46 @@
   mostrarVistaLogin();
 
   // =========================
+  // HELPERS FECHA
+  // =========================
+  function hoyISO() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  function parseISODate(iso) {
+    // iso: YYYY-MM-DD
+    const [y, m, d] = (iso || '').split('-').map(n => parseInt(n, 10));
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d, 0, 0, 0, 0);
+  }
+
+  function formatFechaES(iso) {
+    const dt = parseISODate(iso);
+    if (!dt) return '-';
+    return dt.toLocaleDateString('es-PE');
+  }
+
+  function diffDias(iso) {
+    const dt = parseISODate(iso);
+    if (!dt) return null;
+    const hoy = parseISODate(hoyISO());
+    const ms = dt.getTime() - hoy.getTime();
+    return Math.round(ms / (1000 * 60 * 60 * 24));
+  }
+
+  function badgeVencimiento(iso) {
+    const d = diffDias(iso);
+    if (d === null) return `<span class="due-badge due-ok">Sin fecha</span>`;
+    if (d < 0) return `<span class="due-badge due-over">⛔ Vencido</span>`;
+    if (d <= 1) return `<span class="due-badge due-soon">⚠️ Por vencer</span>`;
+    return `<span class="due-badge due-ok">En plazo</span>`;
+  }
+
+  // =========================
   // STORAGE
   // =========================
   function generarCodigo() {
@@ -755,6 +884,11 @@
   const ticketCodeEl  = document.getElementById('ticketCode');
   const ticketMetaEl  = document.getElementById('ticketMeta');
   const limpiarBtn    = document.getElementById('limpiarBtn');
+  const fechaLimiteInput = document.getElementById('fechaLimite');
+
+  // ✅ bloquear fechas pasadas
+  const minHoy = hoyISO();
+  fechaLimiteInput.min = minHoy;
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -763,12 +897,21 @@
     const visibilidad = data.get('visibilidad');
     const urgencia    = data.get('urgencia');
     const tipo        = data.get('tipo');
+    const fechaLimite = (data.get('fechaLimite') || '').trim();
     const titulo      = (data.get('titulo') || '').trim();
     const detalle     = (data.get('detalle') || '').trim();
     const usuarioSesion = localStorage.getItem('sicoUsuario') || 'ANON';
 
-    if (!visibilidad || !urgencia || !tipo || !titulo || !detalle) {
-      alert('Por favor complete todos los campos.');
+    if (!visibilidad || !urgencia || !tipo || !titulo || !detalle || !fechaLimite) {
+      alert('Por favor complete todos los campos (incluida la fecha límite).');
+      return;
+    }
+
+    // ✅ validación extra (si intentan una fecha pasada)
+    const hoy = parseISODate(hoyISO());
+    const dtLim = parseISODate(fechaLimite);
+    if (!dtLim || dtLim.getTime() < hoy.getTime()) {
+      alert('La fecha límite no puede ser anterior a hoy.');
       return;
     }
 
@@ -776,7 +919,9 @@
     const fecha  = new Date().toLocaleString('es-PE');
 
     const ticket = {
-      codigo, fecha, visibilidad, urgencia, tipo, titulo, detalle,
+      codigo, fecha, visibilidad, urgencia, tipo,
+      fechaLimite, // ✅ nuevo
+      titulo, detalle,
       usuario: usuarioSesion,
       estado: 'REGISTRADO',
       conformidad: null,
@@ -789,15 +934,22 @@
 
     ticketCodeEl.textContent = codigo;
     ticketMetaEl.textContent =
-      `Registrado el ${fecha} – Tipo: ${tipo}, Urgencia: ${urgencia}, Usuario: ${usuarioSesion}`;
+      `Registrado el ${fecha} – Límite: ${formatFechaES(fechaLimite)} – Tipo: ${tipo}, Urgencia: ${urgencia}, Usuario: ${usuarioSesion}`;
 
     ticketBox.style.display = 'block';
     form.reset();
+
+    // volver a setear min y dejar fecha vacía
+    fechaLimiteInput.min = minHoy;
+
     cargarMisTickets();
   });
 
   limpiarBtn.addEventListener('click', () => {
-    if (confirm('¿Desea limpiar el formulario?')) form.reset();
+    if (confirm('¿Desea limpiar el formulario?')) {
+      form.reset();
+      fechaLimiteInput.min = minHoy;
+    }
   });
 
   // =========================
@@ -814,6 +966,7 @@
   const cancelarConformidad        = document.getElementById('cancelarConformidad');
 
   let indiceConformidad = null;
+  let onModalClose = null;
 
   function textoConformidad(t) {
     if (!t.conformidad) return 'Pendiente';
@@ -835,10 +988,16 @@
       tiene = true;
 
       const puedeRevisar = (t.estado === 'ATENDIDO' || t.estado === 'DERIVADO');
+      const yaCalifico = !!t.conformidad;
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${t.codigo}</td>
         <td>${t.fecha}</td>
+        <td>
+          ${formatFechaES(t.fechaLimite)}
+          <div class="small-muted">${badgeVencimiento(t.fechaLimite)}</div>
+        </td>
         <td>${t.tipo}</td>
         <td>${t.urgencia}</td>
         <td>${t.estado}</td>
@@ -846,7 +1005,11 @@
         <td>
           ${
             puedeRevisar
-              ? `<button type="button" class="btn-mini conformidadBtn" data-index="${idx}">Revisar</button>`
+              ? (
+                  yaCalifico
+                    ? '<span class="small-muted">Registrada</span>'
+                    : `<button type="button" class="btn-mini conformidadBtn" data-index="${idx}">Revisar</button>`
+                )
               : '<span class="small-muted">En proceso</span>'
           }
         </td>
@@ -856,7 +1019,7 @@
 
     if (!tiene) {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="7">Aún no ha registrado comunicaciones.</td>`;
+      tr.innerHTML = `<td colspan="8">Aún no ha registrado comunicaciones.</td>`;
       tablaMisTickets.appendChild(tr);
     }
   }
@@ -873,6 +1036,12 @@
     const t = tickets[indiceConformidad];
     if (!t) return;
 
+    // ✅ bloquear doble registro
+    if (t.conformidad) {
+      abrirModal('Su conformidad ya fue registrada anteriormente.');
+      return;
+    }
+
     t.conformidad = seleccion.value;
 
     if (seleccion.value === 'NO_CONFORME') {
@@ -884,8 +1053,33 @@
     }
 
     guardarTickets(tickets);
-    panelConformidadMsg.textContent = 'Su conformidad ha sido registrada. ¡Gracias!';
-    cargarMisTickets();
+
+    // ✅ Modal + al cerrar: ocultar panel y refrescar lista
+    onModalClose = () => {
+      panelConformidad.style.display = 'none';
+      indiceConformidad = null;
+      cargarMisTickets();
+    };
+
+    abrirModal('Su conformidad ha sido registrada. ¡Gracias!');
+  });
+
+  // cuando cierras el modal: ejecutar callback si existe
+  function cerrarModalConCallback() {
+    cerrarModal();
+    if (typeof onModalClose === 'function') {
+      const fn = onModalClose;
+      onModalClose = null;
+      fn();
+    }
+  }
+  // reemplaza handler del botón cerrar para usar callback
+  modalCloseBtn.removeEventListener('click', cerrarModal);
+  modalCloseBtn.addEventListener('click', cerrarModalConCallback);
+
+  // clic fuera del modal también cierra con callback
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) cerrarModalConCallback();
   });
 
   cancelarConformidad.addEventListener('click', () => {
@@ -956,57 +1150,66 @@
 
     if (tickets.length === 0) {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="9">No hay comunicaciones registradas.</td>`;
+      tr.innerHTML = `<td colspan="10">No hay comunicaciones registradas.</td>`;
       tablaTickets.appendChild(tr);
       return;
     }
 
-    let hay = false;
+    // ✅ sugerencia: ordenar por fecha límite asc (más cercano primero)
+    tickets
+      .map((t, idx) => ({ t, idx }))
+      .sort((a, b) => {
+        const da = parseISODate(a.t.fechaLimite)?.getTime() || 0;
+        const db = parseISODate(b.t.fechaLimite)?.getTime() || 0;
+        return da - db;
+      })
+      .forEach(({ t, idx }) => {
+        const confTxt = textoConformidad(t);
+        if (filtro === 'PENDIENTE' && confTxt !== 'Pendiente') return;
+        if (filtro === 'CONFORME' && confTxt !== 'Conforme') return;
+        if (filtro === 'NO_CONFORME' && confTxt !== 'No conforme') return;
 
-    tickets.forEach((t, idx) => {
-      const confTxt = textoConformidad(t);
-      if (filtro === 'PENDIENTE' && confTxt !== 'Pendiente') return;
-      if (filtro === 'CONFORME' && confTxt !== 'Conforme') return;
-      if (filtro === 'NO_CONFORME' && confTxt !== 'No conforme') return;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${t.codigo}</td>
+          <td>${t.fecha}</td>
+          <td>
+            ${formatFechaES(t.fechaLimite)}
+            <div class="small-muted">${badgeVencimiento(t.fechaLimite)}</div>
+          </td>
+          <td>${usuarioMostrable(t)}</td>
+          <td>${t.tipo}</td>
+          <td>${t.urgencia}</td>
+          <td>${t.visibilidad}</td>
+          <td>${badgeEstado(t.estado)}</td>
+          <td>
+            ${badgeConformidad(t)}
+            ${
+              t.conformidad === 'NO_CONFORME' && t.comentarioConformidad
+                ? `<button type="button" class="btn-mini verConformidadBtn" data-index="${idx}">Ver</button>`
+                : ''
+            }
+          </td>
+          <td>
+            <button type="button" class="btn-mini verDetalleBtn" data-index="${idx}">Ver detalle</button>
+            <button type="button" class="btn-mini atenderBtn" data-index="${idx}">Atender</button>
+            <div>
+              <select class="estadoSelect" data-index="${idx}">
+                <option value="REGISTRADO" ${t.estado === 'REGISTRADO' ? 'selected' : ''}>Registrado</option>
+                <option value="EN_REVISION" ${t.estado === 'EN_REVISION' ? 'selected' : ''}>En revisión</option>
+                <option value="ATENDIDO"   ${t.estado === 'ATENDIDO'   ? 'selected' : ''}>Atendido</option>
+                <option value="DERIVADO"   ${t.estado === 'DERIVADO'   ? 'selected' : ''}>Derivado</option>
+              </select>
+            </div>
+          </td>
+        `;
+        tablaTickets.appendChild(tr);
+      });
 
-      hay = true;
-
+    // Si no queda nada visible por filtro
+    if (tablaTickets.children.length === 0) {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${t.codigo}</td>
-        <td>${t.fecha}</td>
-        <td>${usuarioMostrable(t)}</td>
-        <td>${t.tipo}</td>
-        <td>${t.urgencia}</td>
-        <td>${t.visibilidad}</td>
-        <td>${badgeEstado(t.estado)}</td>
-        <td>
-          ${badgeConformidad(t)}
-          ${
-            t.conformidad === 'NO_CONFORME' && t.comentarioConformidad
-              ? `<button type="button" class="btn-mini verConformidadBtn" data-index="${idx}">Ver</button>`
-              : ''
-          }
-        </td>
-        <td>
-          <button type="button" class="btn-mini verDetalleBtn" data-index="${idx}">Ver detalle</button>
-          <button type="button" class="btn-mini atenderBtn" data-index="${idx}">Atender</button>
-          <div>
-            <select class="estadoSelect" data-index="${idx}">
-              <option value="REGISTRADO" ${t.estado === 'REGISTRADO' ? 'selected' : ''}>Registrado</option>
-              <option value="EN_REVISION" ${t.estado === 'EN_REVISION' ? 'selected' : ''}>En revisión</option>
-              <option value="ATENDIDO"   ${t.estado === 'ATENDIDO'   ? 'selected' : ''}>Atendido</option>
-              <option value="DERIVADO"   ${t.estado === 'DERIVADO'   ? 'selected' : ''}>Derivado</option>
-            </select>
-          </div>
-        </td>
-      `;
-      tablaTickets.appendChild(tr);
-    });
-
-    if (!hay) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="9">No hay comunicaciones que coincidan con el filtro.</td>`;
+      tr.innerHTML = `<td colspan="10">No hay comunicaciones que coincidan con el filtro.</td>`;
       tablaTickets.appendChild(tr);
     }
   }
@@ -1042,11 +1245,18 @@
   });
 
   document.addEventListener('click', (e) => {
+    // Abrir panel conformidad trabajador
     if (e.target.classList.contains('conformidadBtn')) {
       const idx = parseInt(e.target.dataset.index, 10);
       const tickets = obtenerTickets();
       const t = tickets[idx];
       if (!t) return;
+
+      // no permitir si ya registró
+      if (t.conformidad) {
+        abrirModal('Su conformidad ya fue registrada anteriormente.');
+        return;
+      }
 
       indiceConformidad = idx;
       panelConformidad.style.display = 'block';
@@ -1059,10 +1269,13 @@
       if (t.respuesta) detalleResp = `Respuesta de RRHH: "${t.respuesta}"`;
       else if (t.areaDerivada) detalleResp = `Derivado al área: ${t.areaDerivada}.`;
 
-      panelConformidadInfo.textContent = `${t.codigo} – ${t.tipo} – Estado: ${t.estado}. ${detalleResp}`;
+      panelConformidadInfo.textContent =
+        `${t.codigo} – ${t.tipo} – Estado: ${t.estado} – Límite: ${formatFechaES(t.fechaLimite)}. ${detalleResp}`;
+
       window.scrollTo({ top: panelConformidad.offsetTop - 80, behavior: 'smooth' });
     }
 
+    // Ver detalle RRHH
     if (e.target.classList.contains('verDetalleBtn')) {
       const idx = parseInt(e.target.dataset.index, 10);
       const tickets = obtenerTickets();
@@ -1073,7 +1286,7 @@
       panelDetalleTicket.style.display = 'block';
 
       detalleTicketInfo.textContent =
-        `${t.codigo} – ${t.tipo} – ${t.urgencia} – Usuario: ${usuarioMostrable(t)} – Estado: ${t.estado}`;
+        `${t.codigo} – ${t.tipo} – ${t.urgencia} – Usuario: ${usuarioMostrable(t)} – Estado: ${t.estado} – Límite: ${formatFechaES(t.fechaLimite)}`;
 
       detalleTicketTitulo.textContent = t.titulo || '(Sin título)';
       detalleTicketDetalle.textContent = t.detalle || '(Sin detalle)';
@@ -1093,6 +1306,7 @@
       window.scrollTo({ top: panelDetalleTicket.offsetTop - 80, behavior: 'smooth' });
     }
 
+    // Atender RRHH
     if (e.target.classList.contains('atenderBtn')) {
       const idx = parseInt(e.target.dataset.index, 10);
       const tickets = obtenerTickets();
@@ -1110,10 +1324,13 @@
       panelRespuesta.style.display = 'none';
       panelDerivar.style.display = 'none';
 
-      panelAtencionInfo.textContent = `${t.codigo} – ${t.tipo} – ${t.urgencia} – ${usuarioMostrable(t)}`;
+      panelAtencionInfo.textContent =
+        `${t.codigo} – ${t.tipo} – ${t.urgencia} – ${usuarioMostrable(t)} – Límite: ${formatFechaES(t.fechaLimite)}`;
+
       window.scrollTo({ top: panelAtencion.offsetTop - 80, behavior: 'smooth' });
     }
 
+    // Ver comentario No conforme RRHH
     if (e.target.classList.contains('verConformidadBtn')) {
       const idx = parseInt(e.target.dataset.index, 10);
       const tickets = obtenerTickets();
@@ -1166,6 +1383,36 @@
   cancelarAtencion.addEventListener('click', cerrarPanelesRRHH);
   cerrarDetalleConformidadBtn.addEventListener('click', () => panelDetalleConformidad.style.display = 'none');
   cerrarDetalleTicketBtn.addEventListener('click', () => panelDetalleTicket.style.display = 'none');
+
+  // =========================
+  // Navegación (inicio/logout)
+  // =========================
+  function getSesion() {
+    return {
+      usuario: localStorage.getItem('sicoUsuario') || '',
+      rol: localStorage.getItem('sicoRol') || ''
+    };
+  }
+
+  function irInicioSegunRol() {
+    const s = getSesion();
+    if (!s.usuario || !s.rol) return mostrarVistaLogin();
+    if (s.rol === 'TRABAJADOR') return mostrarVistaTrabajador();
+    if (s.rol === 'RRHH') return mostrarVistaRRHH();
+    mostrarVistaLogin();
+  }
+
+  function logout() {
+    localStorage.removeItem('sicoUsuario');
+    localStorage.removeItem('sicoRol');
+    mostrarVistaLogin();
+  }
+
+  // botones ya referenciados arriba
+  // brandHome, btnInicio, btnLogout
+  // (ya tienen listeners, pero por seguridad re-asignamos si la app se reusa)
+  // Nota: no duplicamos listeners aquí para evitar dobles acciones.
+
 </script>
 </body>
 </html>
